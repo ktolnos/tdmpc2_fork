@@ -86,3 +86,8 @@ action_dims: ???
 episode_lengths: ???
 seed_steps: ???
 bin_size: ???
+
+use_checkpoint: True
+slurm_checkpoint: False
+checkpoint_dir: /home/eop/checkpoints/tdmpc2
+checkpoint_interval: 100

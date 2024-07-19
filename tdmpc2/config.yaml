@@ -87,6 +87,10 @@ episode_lengths: ???
 seed_steps: ???
 bin_size: ???
 
+use_checkpoint: True
+slurm_checkpoint: True
+checkpoint_interval: 10000
+
 hydra:
   job:
     chdir: True

@@ -6,13 +6,15 @@ from tensordict.tensordict import TensorDict
 
 from trainer.base import Trainer
 
+from checkpoint_utils import load_checkpoint, save_checkpoint
+
 
 class OnlineTrainer(Trainer):
 	"""Trainer class for single-task online TD-MPC2 training."""
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self._step = 0
+		self._step = load_checkpoint(self)
 		self._ep_idx = 0
 		self._start_time = time()
 
@@ -73,6 +75,9 @@ class OnlineTrainer(Trainer):
 			if self._step % self.cfg.eval_freq == 0:
 				eval_next = True
 
+			if self._step > 0 and self._step % self.cfg.checkpoint_interval == 0:
+				save_checkpoint(self._step, self)
+
 			# Reset environment
 			if done:
 				if eval_next:
@@ -81,7 +86,7 @@ class OnlineTrainer(Trainer):
 					self.logger.log(eval_metrics, 'eval')
 					eval_next = False
 
-				if self._step > 0:
+				if self._step > 0 and hasattr(self, '_tds'):
 					train_metrics.update(
 						episode_reward=torch.tensor([td['reward'] for td in self._tds[1:]]).sum(),
 						episode_success=info['success'],
