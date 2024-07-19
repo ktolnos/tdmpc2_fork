@@ -1,5 +1,5 @@
 import os
-from getpass import getpass
+import getpass
 
 
 def get_checkpoint_dir(cfg):
