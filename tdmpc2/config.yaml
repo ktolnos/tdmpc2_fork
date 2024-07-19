@@ -100,10 +100,10 @@ hydra:
     timeout_min: 5750
     max_num_timeout: 10
     submitit_folder: /h/eop/submitit
-    qos: normal
+    qos: scavenger
     gres: gpu:1
     partition: rtx6000,a40,t4v1,t4v2
-    mem_gb: 64
+    mem_gb: 32
     cpus_per_task: 16
     setup:
       - "source ~/.bashrc; module load pytorch2.1-cuda11.8-python3.9; export MUJOCO_PY_BYPASS_LOCK=True; export LD_LIBRARY_PATH=/pkgs/cudnn-8.8/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH=/pkgs/cuda-11.8/extras/CUPTI/lib64/:$LD_LIBRARY_PATH; export MUJOCO_GL=egl; cd ~/rl/tdmpc2_fork/tdmpc2; conda activate tdmpc2"
