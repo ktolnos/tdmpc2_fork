@@ -7,6 +7,7 @@ from termcolor import colored
 from omegaconf import OmegaConf
 
 from common import TASK_SET
+from checkpoint_utils import get_checkpoint_dir
 
 
 CONSOLE_FORMAT = [
@@ -126,15 +127,33 @@ class Logger:
 		os.environ["WANDB_SILENT"] = "true" if cfg.wandb_silent else "false"
 		import wandb
 
-		wandb.init(
-			project=self.project,
-			entity=self.entity,
-			name=str(cfg.seed),
-			group=self._group,
-			tags=cfg_to_group(cfg, return_list=True) + [f"seed:{cfg.seed}"],
-			dir=self._log_dir,
-			config=OmegaConf.to_container(cfg, resolve=True),
-		)
+		wandb_save = os.path.join(get_checkpoint_dir(cfg), 'wandb_id.txt')
+		if os.path.exists(wandb_save):
+			wandb_id = open(wandb_save, 'r').read()
+			print('Resuming run ' + wandb_id)
+			wandb.init(
+				project=self.project,
+				entity=self.entity,
+				name=str(cfg.seed),
+				group=self._group,
+				tags=cfg_to_group(cfg, return_list=True) + [f"seed:{cfg.seed}"],
+				dir=self._log_dir,
+				config=OmegaConf.to_container(cfg, resolve=True),
+				resume=wandb_id,
+			)
+		else:
+			print('Creating new run')
+			run = wandb.init(
+				project=self.project,
+				entity=self.entity,
+				name=str(cfg.seed),
+				group=self._group,
+				tags=cfg_to_group(cfg, return_list=True) + [f"seed:{cfg.seed}"],
+				dir=self._log_dir,
+				config=OmegaConf.to_container(cfg, resolve=True),
+			)
+			with open(wandb_save, 'w') as f:
+				f.write(str(run.id))
 		print(colored("Logs will be synced with wandb.", "blue", attrs=["bold"]))
 		self._wandb = wandb
 		self._video = (
