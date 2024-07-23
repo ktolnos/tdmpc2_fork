@@ -8,6 +8,9 @@ def soft_ce(pred, target, cfg):
 	target = two_hot(target, cfg)
 	return -(target * pred).sum(-1, keepdim=True)
 
+def crossent_loss(pred, target):
+	return (target * torch.log(pred + 1e-8)).mean()
+
 
 @torch.jit.script
 def log_std(x, low, dif):

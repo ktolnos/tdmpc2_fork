@@ -32,6 +32,7 @@ class TDMPC2:
 		self.discount = torch.tensor(
 			[self._get_discount(ep_len) for ep_len in cfg.episode_lengths], device='cuda'
 		) if self.cfg.multitask else self._get_discount(cfg.episode_length)
+		self.consistency_loss_fn = math.crossent_loss if cfg.model_loss == 'crossent' else F.mse_loss
 
 	def _get_discount(self, episode_length):
 		"""
@@ -243,7 +244,7 @@ class TDMPC2:
 		consistency_loss = 0
 		for t in range(self.cfg.horizon):
 			z = self.model.next(z, action[t], task)
-			consistency_loss += F.mse_loss(z, next_z[t]) * self.cfg.rho**t
+			consistency_loss += self.consistency_loss_fn(z, next_z[t]) * self.cfg.rho**t
 			zs[t+1] = z
 
 		# Predictions

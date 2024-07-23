@@ -27,6 +27,7 @@ discount_max: 0.995
 buffer_size: 1_000_000
 exp_name: default
 data_dir: ???
+model_loss: crossent # mse, crossent
 
 # planning
 mpc: true
