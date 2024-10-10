@@ -1,5 +1,7 @@
+from typing import Tuple
 import numpy as np
 from envs.wrappers.time_limit import TimeLimit
+import gym
 
 MYOSUITE_TASKS = {
 	'myo-reach': 'myoHandReachFixed-v0',
@@ -23,7 +25,7 @@ class MyoSuiteWrapper(gym.Wrapper):
 		self.camera_id = 'hand_side_inter'
 
 	def step(self, action):
-		obs, reward, _, info = self.env.step(action.copy())
+		obs, reward, *_, info = self.env.step(action.copy())
 		obs = obs.astype(np.float32)
 		info['success'] = info['solved']
 		return obs, reward, False, info
@@ -37,7 +39,7 @@ class MyoSuiteWrapper(gym.Wrapper):
 			width=384, height=384, camera_id=self.camera_id
 		).copy()
 
-	def reset(self, **kwargs) -> Tuple[ObsType, dict]:
+	def reset(self, **kwargs):
 		"""Resets the environment with kwargs."""
 		return self.env.reset(**kwargs)[0]
 
