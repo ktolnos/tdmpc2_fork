@@ -54,7 +54,19 @@ def train(cfg: dict):
 		buffer=Buffer(cfg),
 		logger=Logger(cfg),
 	)
-	trainer.train()
+	import sys
+	import traceback
+	# This main is used to circumvent a bug in Hydra
+	# See https://github.com/facebookresearch/hydra/issues/2664
+
+	try:
+		trainer.train()
+	except Exception:
+		traceback.print_exc(file=sys.stderr)
+	finally:
+		# fflush everything
+		sys.stdout.flush()
+		sys.stderr.flush()
 	print('\nTraining completed successfully')
 
 
