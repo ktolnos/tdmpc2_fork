@@ -31,7 +31,6 @@ class TensorWrapper(gym.Wrapper):
 		return obs
 
 	def reset(self, task_idx=None):
-		print(self.env.reset())
 		return self._obs_to_tensor(self.env.reset())
 
 	def step(self, action):

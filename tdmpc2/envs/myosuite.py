@@ -38,6 +38,10 @@ class MyoSuiteWrapper(gym.Wrapper):
 			width=384, height=384, camera_id=self.camera_id
 		).copy()
 
+	def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None) -> tuple[
+		WrapperObsType, dict[str, Any]]:
+		return super().reset(seed=seed, options=options)[0]
+
 
 def make_env(cfg):
 	"""
