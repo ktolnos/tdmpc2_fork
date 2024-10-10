@@ -1,7 +1,6 @@
 import numpy as np
-import gym
 from envs.wrappers.time_limit import TimeLimit
-
+from myosuite.utils import gym  # initializes myosuite, pip install myosuite to use this env
 
 MYOSUITE_TASKS = {
 	'myo-reach': 'myoHandReachFixed-v0',
