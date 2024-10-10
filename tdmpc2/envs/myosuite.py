@@ -1,6 +1,5 @@
 import numpy as np
 from envs.wrappers.time_limit import TimeLimit
-from myosuite.utils import gym  # initializes myosuite, pip install myosuite to use this env
 
 MYOSUITE_TASKS = {
 	'myo-reach': 'myoHandReachFixed-v0',
@@ -38,9 +37,10 @@ class MyoSuiteWrapper(gym.Wrapper):
 			width=384, height=384, camera_id=self.camera_id
 		).copy()
 
-	def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None) -> tuple[
-		WrapperObsType, dict[str, Any]]:
-		return super().reset(seed=seed, options=options)[0]
+	def reset(self, **kwargs) -> Tuple[ObsType, dict]:
+		"""Resets the environment with kwargs."""
+		return self.env.reset(**kwargs)[0]
+
 
 
 def make_env(cfg):
@@ -51,7 +51,8 @@ def make_env(cfg):
 		raise ValueError('Unknown task:', cfg.task)
 	assert cfg.obs == 'state', 'This task only supports state observations.'
 	import myosuite
-	env = gym.make(MYOSUITE_TASKS[cfg.task])
+	from myosuite.utils import gym as myogym  # initializes myosuite, pip install myosuite to use this env
+	env = myogym.make(MYOSUITE_TASKS[cfg.task])
 	env = MyoSuiteWrapper(env, cfg)
 	env = TimeLimit(env, max_episode_steps=100)
 	env.max_episode_steps = env._max_episode_steps
