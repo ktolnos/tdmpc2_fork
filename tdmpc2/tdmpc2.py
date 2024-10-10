@@ -259,7 +259,7 @@ class TDMPC2:
 			reward_loss += math.soft_ce(reward_preds[t], reward[t], self.cfg).mean() * self.cfg.rho**t
 			for q in range(self.cfg.num_q):
 				value_loss += math.soft_ce(qs[q][t], td_targets[t], self.cfg).mean() * self.cfg.rho**t
-				value_mse += F.mse_loss(qs[q][t], td_targets[t]) * self.cfg.rho**t
+				value_mse += F.mse_loss(math.two_hot_inv(qs[q][t], self.cfg), td_targets[t]) * self.cfg.rho**t
 		consistency_loss *= (1/self.cfg.horizon)
 		reward_loss *= (1/self.cfg.horizon)
 		value_loss *= (1/(self.cfg.horizon * self.cfg.num_q))
