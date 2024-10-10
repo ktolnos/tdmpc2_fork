@@ -254,10 +254,12 @@ class TDMPC2:
 		
 		# Compute losses
 		reward_loss, value_loss = 0, 0
+		value_mse = 0
 		for t in range(self.cfg.horizon):
 			reward_loss += math.soft_ce(reward_preds[t], reward[t], self.cfg).mean() * self.cfg.rho**t
 			for q in range(self.cfg.num_q):
 				value_loss += math.soft_ce(qs[q][t], td_targets[t], self.cfg).mean() * self.cfg.rho**t
+				value_mse += F.mse_loss(qs[q][t], td_targets[t]) * self.cfg.rho**t
 		consistency_loss *= (1/self.cfg.horizon)
 		reward_loss *= (1/self.cfg.horizon)
 		value_loss *= (1/(self.cfg.horizon * self.cfg.num_q))
@@ -284,8 +286,11 @@ class TDMPC2:
 			"consistency_loss": float(consistency_loss.mean().item()),
 			"reward_loss": float(reward_loss.mean().item()),
 			"value_loss": float(value_loss.mean().item()),
+			"value_mse": float(value_loss.mean().item()),
 			"pi_loss": pi_loss,
 			"total_loss": float(total_loss.mean().item()),
 			"grad_norm": float(grad_norm),
 			"pi_scale": float(self.scale.value),
+			"q_1": float(qs[0].mean().item()),
+			"q_2": float(qs[1].mean().item()),
 		}
