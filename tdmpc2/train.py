@@ -64,6 +64,7 @@ def train(cfg: dict):
 	except Exception:
 		print(colored('Exception occurred during training:', 'red', attrs=['bold']))
 		traceback.print_exc(file=sys.stderr)
+		traceback.print_exc(file=sys.stdout)
 	finally:
 		# fflush everything
 		sys.stdout.flush()
